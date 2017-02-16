@@ -1,17 +1,18 @@
-// LIRI's JS Code
+// JS Code for LIRI Bot, created by Connor Hoy in tandem with Austin I. With much of it being pulled from sources and documentation.
 
-// Vendor
+// Requires NPM packages needed for this project.
 var fs = require('fs');
-var Twitter = require('twitter');
+var twitter = require('twitter');
 var spotify = require('spotify');
 var request = require('request');
 
-// My Scripts
+// Requires key.
 var keys = require('./keys.js');
 
+// Beginning of Twitter code.
 var app = {
   "my-tweets": function() {
-    var client = new Twitter(keys);
+    var client = twitter(keys.twitterKeys);
     client.get('statuses/user_timeline', function(error, tweetData, response) {
       if (!error) {
         console.log(' ');
@@ -33,11 +34,13 @@ var app = {
       }
     });
   },
+
+// Beginning of Spotify code.
   "spotify-this-song": function(keyword) {
     spotify.search({ type: 'track', query: keyword || 'The Sign Ace of Base' }, function(err, data) {
       if ( err ) {
-          console.log('Error occurred: ' + err);
-          return;
+        console.log('An error occurred: ' + err);
+        return;
       }
 
       if(data.tracks.items.length > 0) {
@@ -61,6 +64,8 @@ var app = {
 
     });
   },
+
+// Beginnning of movie code.
   "movie-this": function(query) {
     request('http://www.omdbapi.com/?t=' + (query || 'Mr.Nobody') +'&tomatoes=true', function (error, response, info) {
       if (!error && response.statusCode == 200) {
@@ -85,6 +90,8 @@ var app = {
       }
     });
   },
+
+// Beginning of 'do what it says' code.
   "do-what-it-says": function() {
     fs.readFile('random.txt', 'utf8', function(err, data) {
       if(err) throw err;
@@ -95,6 +102,8 @@ var app = {
       app[cmds[0].trim()](cmds[1].trim());
     });
   },
+
+// Logs everything out to log.txt, in JSON stringify form.
   logData: function(data) {
     fs.appendFile('log.txt', JSON.stringify(data, null, 2) + '\n====================================================================================', function(err) {
       if(err) {
@@ -103,6 +112,5 @@ var app = {
     });
   }
 };
-
 
 app[process.argv[2]](process.argv[3]);
